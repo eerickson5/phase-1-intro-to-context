@@ -1,3 +1,5 @@
+const { all } = require("axios");
+
 // Your code here
 function createEmployeeRecord(employeeArray){
     return {
@@ -41,7 +43,27 @@ function createTimeOutEvent(employeeRecord, dateStamp) {
     return newRecord
 }
 
-function hoursWorkedOnDate(employeeRecord, date){
+function hoursWorkedOnDate(employee, date){
     //i could write a binary search but i dont feel like it
-    const clockIn = employeeRecord.timeInEvents.reduce()
+    const clockIn = employee.timeInEvents.find( event => event.date === date)
+    const clockOut = employee.timeOutEvents.find( event => event.date === date)
+    return (clockOut.hour - clockIn.hour)/100
+}
+
+function wagesEarnedOnDate(employee, date){
+    return (hoursWorkedOnDate(employee, date) * employee.payPerHour);
+}
+
+function allWagesFor(employee){
+    return employee.timeInEvents.reduce( (accumulator, event) => {
+        accumulator += wagesEarnedOnDate(employee, event.date)
+        return accumulator
+    }, 0)
+}
+
+function calculatePayroll(employees){
+    return employees.reduce( (accumulator, employee) => {
+        accumulator += allWagesFor(employee)
+        return accumulator
+    }, 0)
 }
